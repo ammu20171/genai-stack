@@ -2,6 +2,8 @@ services:
 
   llm: &llm
     image: ollama/ollama:latest
+    volumes:
+      - $PWD/ollama:/root/.ollama
     networks:
       - net
 
