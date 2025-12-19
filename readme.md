@@ -2,11 +2,100 @@
 The GenAI Stack will get you started building your own GenAI application in no time.
 The demo applications can serve as inspiration or as a starting point.
 Learn more about the details in the [introduction blog post](https://neo4j.com/blog/introducing-genai-stack-developers/).
- CPU version
-docker-compose --profile linux up -d
 
-# GPU version (requires NVIDIA Docker runtime)
-docker-compose --profile linux-gpu up -d
+## Git Clone
+
+```bash
+git clone https://github.com/ammu20171/genai-stack.git
+cd genai-stack
+```
+
+# Develop
+
+> [!WARNING]
+> There is a performance issue that impacts python applications in the `4.24.x` releases of Docker Desktop. Please upgrade to the latest release before using this stack.
+
+**To start everything**
+
+The first build may take approximately 30 minutes.
+```
+docker compose up
+```
+For subsequent restarts (after the first build), use:
+```
+docker compose up --no-build
+```
+
+If changes to build scripts have been made, **rebuild**.
+```
+docker compose up --build
+```
+
+To enter **watch mode** (auto rebuild on file changes).
+First start everything, then in new terminal:
+```
+docker compose watch
+```
+
+**Shutdown**
+If health check fails or containers don't start up as expected, shutdown
+completely to start up again.
+```
+docker compose down
+```
+
+## Quick Start
+docker compose up
+
+# Applications
+
+Here's what's in this repo:
+
+| Name | Main files | Compose name | URLs | Description |
+|---|---|---|---|---|
+| PDF Resume Extractor | `pdf_bot.py` | `pdf_bot` | http://localhost:8501 | Read local PDF resume and ask it questions. Fullstack Python application. |
+| Support Bot | `bot.py` | `bot` | http://localhost:8502 | Main usecase. Fullstack Python application. |
+| Stack Overflow Loader | `loader.py` | `loader` | http://localhost:8503 | Load SO data into the database (create vector embeddings etc). Fullstack Python application. |
+| Standalone Bot API | `api.py` | `api` | http://localhost:8504 | Standalone HTTP API streaming (SSE) + non-streaming endpoints Python. |
+| Standalone Bot UI | `front-end/` | `front-end` | http://localhost:8505 | Standalone client that uses the Standalone Bot API to interact with the model. JavaScript (Svelte) front-end. |
+
+The database can be explored at http://localhost:7474.
+
+## App 1 - PDF Resume Extractor (Q&A)
+
+UI: http://localhost:8501
+DB client: http://localhost:7474
+
+This application lets you load a local PDF resume into text
+chunks and embed it into Neo4j so you can ask questions about
+its contents and have the LLM answer them using vector similarity
+search.
+
+![](.github/media/app3-ui.png)
+
+---
+
+## App 2 - Support Agent Bot
+
+UI: http://localhost:8502
+DB client: http://localhost:7474
+
+- answer support question based on recent entries
+- provide summarized answers with sources
+- demonstrate difference between
+    - RAG Disabled (pure LLM response)
+    - RAG Enabled (vector + knowledge graph context)
+- allow to generate a high quality support ticket for the current conversation based on the style of highly rated questions in the database.
+
+![](.github/media/app1-rag-selector.png)
+*(Chat input + RAG mode selector)*
+
+|  |  |
+|---|---|
+| ![](.github/media/app1-generate.png) | ![](.github/media/app1-ticket.png) |
+| *(CTA to auto generate support ticket draft)* | *(UI of the auto generated support ticket draft)* |
+
+---
 
 # Configure
 
@@ -47,78 +136,16 @@ To use the Linux-GPU profile: run `docker compose --profile linux-gpu up`. Also 
 
 **Windows**
 Ollama now supports Windows. Install [Ollama](https://ollama.ai) on Windows and start it before running `docker compose up` using `ollama serve` in a separate terminal. Alternatively, Windows users can generate an OpenAI API key and configure the stack to use `gpt-3.5` or `gpt-4` in the `.env` file.
-# Develop
 
-> [!WARNING]
-> There is a performance issue that impacts python applications in the `4.24.x` releases of Docker Desktop. Please upgrade to the latest release before using this stack.
+##  App 3 - Loader
 
-**To start everything**
-```
-docker compose up
-```
-If changes to build scripts have been made, **rebuild**.
-```
-docker compose up --build
-```
-
-To enter **watch mode** (auto rebuild on file changes).
-First start everything, then in new terminal:
-```
-docker compose watch
-```
-
-**Shutdown**
-If health check fails or containers don't start up as expected, shutdown
-completely to start up again.
-```
-docker compose down
-```
-
-# Applications
-
-Here's what's in this repo:
-
-| Name | Main files | Compose name | URLs | Description |
-|---|---|---|---|---|
-| Support Bot | `bot.py` | `bot` | http://localhost:8501 | Main usecase. Fullstack Python application. |
-| Stack Overflow Loader | `loader.py` | `loader` | http://localhost:8502 | Load SO data into the database (create vector embeddings etc). Fullstack Python application. |
-| PDF Reader | `pdf_bot.py` | `pdf_bot` | http://localhost:8503 | Read local PDF and ask it questions. Fullstack Python application. |
-| Standalone Bot API | `api.py` | `api` | http://localhost:8504 | Standalone HTTP API streaming (SSE) + non-streaming endpoints Python. |
-| Standalone Bot UI | `front-end/` | `front-end` | http://localhost:8505 | Standalone client that uses the Standalone Bot API to interact with the model. JavaScript (Svelte) front-end. |
-
-The database can be explored at http://localhost:7474.
-
-## App 1 - Support Agent Bot
-
-UI: http://localhost:8501
-DB client: http://localhost:7474
-
-- answer support question based on recent entries
-- provide summarized answers with sources
-- demonstrate difference between
-    - RAG Disabled (pure LLM response)
-    - RAG Enabled (vector + knowledge graph context)
-- allow to generate a high quality support ticket for the current conversation based on the style of highly rated questions in the database.
-
-![](.github/media/app1-rag-selector.png)
-*(Chat input + RAG mode selector)*
-
-|  |  |
-|---|---|
-| ![](.github/media/app1-generate.png) | ![](.github/media/app1-ticket.png) |
-| *(CTA to auto generate support ticket draft)* | *(UI of the auto generated support ticket draft)* |
-
----
-
-##  App 2 - Loader
-
-UI: http://localhost:8502
+UI: http://localhost:8503
 DB client: http://localhost:7474
 
 - import recent Stack Overflow data for certain tags into a KG
 - embed questions and answers and store them in vector index
 - UI: choose tags, run import, see progress, some stats of data in the database
-- Load high ranked questions (regardless of tags) to support the ticket generation feature of App 1.
+- Load high ranked questions (regardless of tags) to support the ticket generation feature of App 2.
 
 
 
@@ -126,17 +153,6 @@ DB client: http://localhost:7474
 |  |  |
 |---|---|
 | ![](.github/media/app2-ui-1.png) | ![](.github/media/app2-model.png) |
-
-## App 3 Question / Answer with a local PDF
-UI: http://localhost:8503  
-DB client: http://localhost:7474
-
-This application lets you load a local PDF into text
-chunks and embed it into Neo4j so you can ask questions about
-its contents and have the LLM answer them using vector similarity
-search.
-
-![](.github/media/app3-ui.png)
 
 ## App 4 Standalone HTTP API
 Endpoints: 
@@ -148,13 +164,13 @@ Example cURL command:
 curl http://localhost:8504/query-stream\?text\=minimal%20hello%20world%20in%20python\&rag\=false
 ```
 
-Exposes the functionality to answer questions in the same way as App 1 above. Uses
+Exposes the functionality to answer questions in the same way as App 2 above. Uses
 same code and prompts.
 
 ## App 5 Static front-end
 UI: http://localhost:8505
 
-This application has the same features as App 1, but is built separate from
+This application has the same features as App 2, but is built separate from
 the back-end code using modern best practices (Vite, Svelte, Tailwind).  
 The auto-reload on changes are instant using the Docker watch `sync` config.  
 ![](.github/media/app5-ui.png)
