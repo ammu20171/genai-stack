@@ -97,6 +97,45 @@ DB client: http://localhost:7474
 
 ---
 
+##  App 3 - Loader
+
+UI: http://localhost:8503
+DB client: http://localhost:7474
+
+- import recent Stack Overflow data for certain tags into a KG
+- embed questions and answers and store them in vector index
+- UI: choose tags, run import, see progress, some stats of data in the database
+- Load high ranked questions (regardless of tags) to support the ticket generation feature of App 2.
+
+
+
+
+|  |  |
+|---|---|
+| ![](.github/media/app2-ui-1.png) | ![](.github/media/app2-model.png) |
+
+## App 4 Standalone HTTP API
+Endpoints: 
+  - http://localhost:8504/query?text=hello&rag=false (non streaming)
+  - http://localhost:8504/query-stream?text=hello&rag=false (SSE streaming)
+
+Example cURL command:
+```bash
+curl http://localhost:8504/query-stream\?text\=minimal%20hello%20world%20in%20python\&rag\=false
+```
+
+Exposes the functionality to answer questions in the same way as App 2 above. Uses
+same code and prompts.
+
+## App 5 Static front-end
+UI: http://localhost:8505
+
+This application has the same features as App 2, but is built separate from
+the back-end code using modern best practices (Vite, Svelte, Tailwind).  
+The auto-reload on changes are instant using the Docker watch `sync` config.  
+![](.github/media/app5-ui.png)
+
+
 # Configure
 
 Create a `.env` file from the environment template file `env.example`
@@ -136,41 +175,3 @@ To use the Linux-GPU profile: run `docker compose --profile linux-gpu up`. Also 
 
 **Windows**
 Ollama now supports Windows. Install [Ollama](https://ollama.ai) on Windows and start it before running `docker compose up` using `ollama serve` in a separate terminal. Alternatively, Windows users can generate an OpenAI API key and configure the stack to use `gpt-3.5` or `gpt-4` in the `.env` file.
-
-##  App 3 - Loader
-
-UI: http://localhost:8503
-DB client: http://localhost:7474
-
-- import recent Stack Overflow data for certain tags into a KG
-- embed questions and answers and store them in vector index
-- UI: choose tags, run import, see progress, some stats of data in the database
-- Load high ranked questions (regardless of tags) to support the ticket generation feature of App 2.
-
-
-
-
-|  |  |
-|---|---|
-| ![](.github/media/app2-ui-1.png) | ![](.github/media/app2-model.png) |
-
-## App 4 Standalone HTTP API
-Endpoints: 
-  - http://localhost:8504/query?text=hello&rag=false (non streaming)
-  - http://localhost:8504/query-stream?text=hello&rag=false (SSE streaming)
-
-Example cURL command:
-```bash
-curl http://localhost:8504/query-stream\?text\=minimal%20hello%20world%20in%20python\&rag\=false
-```
-
-Exposes the functionality to answer questions in the same way as App 2 above. Uses
-same code and prompts.
-
-## App 5 Static front-end
-UI: http://localhost:8505
-
-This application has the same features as App 2, but is built separate from
-the back-end code using modern best practices (Vite, Svelte, Tailwind).  
-The auto-reload on changes are instant using the Docker watch `sync` config.  
-![](.github/media/app5-ui.png)
