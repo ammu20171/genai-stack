@@ -3,4 +3,10 @@
 !requirements.txt
 !images/*
 !front-end/*
+!api/*
+!bot/*
+!loader/*
+!pdf_bot/*
+!pull_model/*
+!common/*
 front-end/node_modules/*

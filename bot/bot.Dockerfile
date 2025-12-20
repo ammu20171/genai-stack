@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY common/requirements.txt .
 
 RUN pip install --upgrade -r requirements.txt
 
-COPY bot.py .
-COPY utils.py .
-COPY chains.py .
+COPY bot/bot.py .
+COPY common/utils.py .
+COPY common/chains.py .
 
 EXPOSE 8501
 
