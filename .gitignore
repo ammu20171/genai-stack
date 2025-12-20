@@ -1,7 +1,11 @@
+.venv
 .env
 data/
+# Ignore contents of embedding_model but keep the directory and .ignore file
 embedding_model/*
 !embedding_model/.ignore
 .DS_Store
 ollama/*
+__pycache__/
+*.pyc
 
